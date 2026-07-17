@@ -12,7 +12,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Shabbir Thakur| Full-Stack Developer",
   description:
-    "Available here for ",
+    "Hire Shabbir Thakur, a freelance Full-Stack Developer creating high-performance websites, custom web applications, landing pages, and responsive user experiences using modern technologies."
 }
 
 export default function RootLayout({
