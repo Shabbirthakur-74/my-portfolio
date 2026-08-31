@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, memo, useCallback } from "react";
+import { motion } from "framer-motion";
 import {
   Monitor,
   Code2,
@@ -8,6 +9,7 @@ import {
   Database,
   type LucideIcon,
 } from "lucide-react";
+import { Reveal } from "./reveal";
 
 interface Skill {
   name: string;
@@ -23,51 +25,50 @@ interface SkillGroup {
   items: Skill[];
 }
 
-const FONT_MONO = "'Fira Code', monospace";
-const FONT_SANS = "'Outfit', sans-serif";
+const EASE = [0.25, 0.46, 0.45, 0.94] as const;
 
 const colorMap = {
   emerald: {
-    barFrom: "#34d399",
-    barTo: "#6ee7b7",
+    barFrom: "var(--color-emerald)",
+    barTo: "var(--color-emerald-soft)",
     glow: "shadow-emerald-500/20",
     tag: "bg-emerald-400/10 text-emerald-400 border-emerald-400/20",
     icon: "text-emerald-400",
     activeBorder: "border-emerald-400/25",
-    activeBg: "bg-[#0a1c14]",
+    activeBg: "bg-panel-emerald",
     tabActive: "bg-emerald-400/10 text-emerald-400 border-emerald-400/25",
     dot: "bg-emerald-400",
   },
   sky: {
-    barFrom: "#38bdf8",
-    barTo: "#7dd3fc",
+    barFrom: "var(--color-sky)",
+    barTo: "var(--color-sky-soft)",
     glow: "shadow-sky-500/20",
     tag: "bg-sky-400/10 text-sky-400 border-sky-400/20",
     icon: "text-sky-400",
     activeBorder: "border-sky-400/25",
-    activeBg: "bg-[#091824]",
+    activeBg: "bg-panel-sky",
     tabActive: "bg-sky-400/10 text-sky-400 border-sky-400/25",
     dot: "bg-sky-400",
   },
   violet: {
-    barFrom: "#a78bfa",
-    barTo: "#c4b5fd",
+    barFrom: "var(--color-violet)",
+    barTo: "var(--color-violet-soft)",
     glow: "shadow-violet-500/20",
     tag: "bg-violet-400/10 text-violet-400 border-violet-400/20",
     icon: "text-violet-400",
     activeBorder: "border-violet-400/25",
-    activeBg: "bg-[#10091e]",
+    activeBg: "bg-panel-violet",
     tabActive: "bg-violet-400/10 text-violet-400 border-violet-400/25",
     dot: "bg-violet-400",
   },
   amber: {
-    barFrom: "#fbbf24",
-    barTo: "#fde68a",
+    barFrom: "var(--color-amber)",
+    barTo: "var(--color-amber-soft)",
     glow: "shadow-amber-500/20",
     tag: "bg-amber-400/10 text-amber-400 border-amber-400/20",
     icon: "text-amber-400",
     activeBorder: "border-amber-400/25",
-    activeBg: "bg-[#1a1408]",
+    activeBg: "bg-panel-amber",
     tabActive: "bg-amber-400/10 text-amber-400 border-amber-400/25",
     dot: "bg-amber-400",
   },
@@ -133,36 +134,40 @@ const SkillBar = memo(function SkillBar({
   name,
   level,
   color,
+  index,
 }: {
   name: string;
   level: number;
   color: keyof typeof colorMap;
+  index: number;
 }) {
   const c = colorMap[color];
 
   return (
-    <div className="space-y-1.5">
+    <motion.div
+      className="space-y-1.5"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: EASE, delay: index * 0.06 }}
+    >
       <div className="flex justify-between items-center">
-        <span className="text-sm font-medium text-[#c4cad6]">{name}</span>
-        <span
-          className="text-[11px] tabular-nums text-[#525c70]"
-          style={{ fontFamily: FONT_MONO }}
-        >
-          {level}%
-        </span>
+        <span className="text-sm font-medium text-text-2">{name}</span>
+        <span className="text-[11px] tabular-nums text-text-7">{level}%</span>
       </div>
 
       <div className="h-[5px] rounded-full bg-white/5 overflow-hidden">
-        <div
+        <motion.div
           className="h-full rounded-full"
           style={{
-            width: `${level}%`,
             background: `linear-gradient(90deg, ${c.barFrom}, ${c.barTo})`,
             opacity: 0.85,
           }}
+          initial={{ width: 0 }}
+          animate={{ width: `${level}%` }}
+          transition={{ duration: 0.9, ease: EASE, delay: 0.15 + index * 0.06 }}
         />
       </div>
-    </div>
+    </motion.div>
   );
 });
 
@@ -187,116 +192,109 @@ export default function Skills() {
   }, []);
 
   return (
-    <section
-      id="skills"
-      className="bg-[#0b0f1a] text-[#e8eaf0] py-24 px-5"
-      style={{ fontFamily: FONT_SANS }}
-    >
+    <section id="skills" className="bg-surface text-text py-24 px-5">
       <div className="w-full max-w-3xl mx-auto">
-        <p
-          className="text-center text-xs tracking-[0.25em] uppercase mb-3"
-          style={{
-            fontFamily: FONT_MONO,
-            color: "#6ee7b7",
-          }}
-        >
-          skills & expertise
-        </p>
+        <Reveal>
+          <p className="text-center text-xs tracking-[0.25em] uppercase mb-3 text-emerald-soft">
+            skills & expertise
+          </p>
 
-        <h2 className="text-center text-4xl md:text-5xl font-semibold mb-4 leading-tight">
-          My{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-sky-400 to-violet-400">
-            Tech Stack
-          </span>
-        </h2>
+          <h2 className="text-center text-4xl md:text-5xl font-semibold mb-4 leading-tight">
+            My{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-sky-400 to-violet-400">
+              Tech Stack
+            </span>
+          </h2>
 
-        <p className="text-center text-[#8892a4] text-sm mb-12 max-w-xs mx-auto leading-relaxed">
-          Technologies I use to build full-stack web projects  from design to
-          deployment.
-        </p>
+          <p className="text-center text-text-4 text-sm mb-12 max-w-xs mx-auto leading-relaxed">
+            Technologies I use to build full-stack web projects  from design to
+            deployment.
+          </p>
+        </Reveal>
 
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
+        <Reveal delay={0.1} className="flex flex-wrap justify-center gap-2 mb-8">
           {skillGroups.map((g) => {
             const gc = colorMap[g.color];
             const isActive = active === g.category;
 
             return (
-              <button
+              <motion.button
                 key={g.category}
                 type="button"
                 onClick={() => handleSelect(g.category)}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.96 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all duration-200 cursor-pointer
                 ${
                   isActive
                     ? gc.tabActive
-                    : "border-white/6 text-[#8892a4] hover:bg-white/4 hover:text-[#c4cad6] hover:border-white/10"
+                    : "border-white/6 text-text-4 hover:bg-white/4 hover:text-text-2 hover:border-white/10"
                 }`}
               >
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${
-                    isActive ? gc.dot : "bg-[#3a4256]"
+                    isActive ? gc.dot : "bg-text-9"
                   }`}
                 />
                 {g.category}
-              </button>
+              </motion.button>
             );
           })}
-        </div>
+        </Reveal>
 
-        <div
-          className={`rounded-2xl border ${c.activeBorder} ${c.activeBg} shadow-xl ${c.glow} p-7 transition-all duration-300`}
-        >
-          <div className="flex items-center justify-between mb-7">
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border border-white/8 ${c.icon}`}
-              >
-                <Icon className="w-5 h-5" strokeWidth={1.8} />
-              </div>
-
-              <div>
-                <p className="text-[15px] font-semibold text-[#e8eaf0]">
-                  {group.label}
-                </p>
-
-                <p
-                  className="text-xs text-[#525c70] mt-0.5"
-                  style={{ fontFamily: FONT_MONO }}
+        <Reveal delay={0.15}>
+          <motion.div
+            key={group.category}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: EASE }}
+            className={`rounded-2xl border ${c.activeBorder} ${c.activeBg} shadow-xl ${c.glow} p-7`}
+          >
+            <div className="flex items-center justify-between mb-7">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border border-white/8 ${c.icon}`}
                 >
-                  {group.items.length} technologies
-                </p>
+                  <Icon className="w-5 h-5" strokeWidth={1.8} />
+                </div>
+
+                <div>
+                  <p className="text-[15px] font-semibold text-text">
+                    {group.label}
+                  </p>
+
+                  <p className="text-xs text-text-7 mt-0.5">
+                    {group.items.length} technologies
+                  </p>
+                </div>
               </div>
+
+              <span
+                className={`hidden sm:inline-flex text-xs px-3 py-1 rounded-full border ${c.tag}`}
+              >
+                {group.tag}
+              </span>
             </div>
 
-            <span
-              className={`hidden sm:inline-flex text-xs px-3 py-1 rounded-full border ${c.tag}`}
-              style={{ fontFamily: FONT_MONO }}
-            >
-              {group.tag}
-            </span>
-          </div>
+            <div className={`grid ${cols} gap-x-10 gap-y-4`}>
+              {group.items.map((item, i) => (
+                <SkillBar
+                  key={item.name}
+                  index={i}
+                  name={item.name}
+                  level={item.level}
+                  color={group.color}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </Reveal>
 
-          <div className={`grid ${cols} gap-x-10 gap-y-4`}>
-            {group.items.map((item) => (
-              <SkillBar
-                key={item.name}
-                name={item.name}
-                level={item.level}
-                color={group.color}
-              />
-            ))}
-          </div>
-        </div>
-
-        <p
-          className="text-center text-xs mt-8"
-          style={{
-            fontFamily: FONT_MONO,
-            color: "#8892a4",
-          }}
-        >
-          Always learning — this stack keeps growing
-        </p>
+        <Reveal delay={0.1}>
+          <p className="text-center text-xs mt-8 text-text-4">
+            Always learning — this stack keeps growing
+          </p>
+        </Reveal>
       </div>
     </section>
   );

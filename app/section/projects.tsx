@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback, useMemo, memo } from "react";
-import { ChevronLeft, ChevronRight, ArrowUpRight, Globe, Link } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowUpRight, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { Reveal } from "./reveal";
 
 interface Project {
   id: number;
@@ -15,10 +16,6 @@ interface Project {
   liveUrl: string;
   accent: "emerald" | "sky" | "violet";
 }
-
-const FONT_JET_MONO = "JetBrains Mono, monospace";
-const FONT_OUTFIT = "Outfit, sans-serif";
-const FONT_INTER = "Inter, sans-serif";
 
 const PROJECTS: Project[] = [
   {
@@ -72,28 +69,31 @@ const ACCENT = {
     badge: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
     pill: "bg-emerald-500/[0.08] border-emerald-500/15 text-emerald-300",
     btnGradient: "from-emerald-500 to-sky-400",
-    glow: "0 0 80px rgba(16,185,129,0.14)",
-    radial: "rgba(16,185,129,0.07)",
-    pillColor: "#10b981",
-    dotShadow: "0 0 8px rgba(52,211,153,0.9)",
+    glow: "0 0 80px var(--glow-emerald)",
+    radial: "var(--radial-emerald)",
+    radialSoft: "var(--radial-emerald-soft)",
+    pillColor: "var(--color-emerald-deep)",
+    pillGlow: "0 0 10px var(--pill-glow-emerald)",
   },
   sky: {
     badge: "bg-sky-500/10 border-sky-500/20 text-sky-400",
     pill: "bg-sky-500/[0.08] border-sky-500/15 text-sky-300",
     btnGradient: "from-sky-500 to-violet-500",
-    glow: "0 0 80px rgba(14,165,233,0.14)",
-    radial: "rgba(14,165,233,0.07)",
-    pillColor: "#0ea5e9",
-    dotShadow: "0 0 8px rgba(56,189,248,0.9)",
+    glow: "0 0 80px var(--glow-sky)",
+    radial: "var(--radial-sky)",
+    radialSoft: "var(--radial-sky-soft)",
+    pillColor: "var(--color-sky-deep)",
+    pillGlow: "0 0 10px var(--pill-glow-sky)",
   },
   violet: {
     badge: "bg-violet-500/10 border-violet-500/20 text-violet-400",
     pill: "bg-violet-500/[0.08] border-violet-500/15 text-violet-300",
     btnGradient: "from-violet-500 to-sky-400",
-    glow: "0 0 80px rgba(139,92,246,0.14)",
-    radial: "rgba(139,92,246,0.07)",
-    pillColor: "#8b5cf6",
-    dotShadow: "0 0 8px rgba(167,139,250,0.9)",
+    glow: "0 0 80px var(--glow-violet)",
+    radial: "var(--radial-violet)",
+    radialSoft: "var(--radial-violet-soft)",
+    pillColor: "var(--color-violet-deep)",
+    pillGlow: "0 0 10px var(--pill-glow-violet)",
   },
 } as const;
 
@@ -105,16 +105,16 @@ const BrowserFrame = memo(function BrowserFrame({
   alt: string;
 }) {
   return (
-    <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#0f0f12] shadow-2xl transition-colors duration-500 group-hover:border-white/[0.14]">
+    <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-frame shadow-2xl transition-colors duration-500 group-hover:border-white/[0.14]">
       {/* Chrome bar */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-[#111115] border-b border-white/[0.06]">
+      <div className="flex items-center gap-3 px-4 py-3 bg-frame-bar border-b border-white/[0.06]">
         <div className="flex gap-[6px]">
-          <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-          <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
-          <span className="w-3 h-3 rounded-full bg-[#28c840]" />
+          <span className="w-3 h-3 rounded-full bg-dot-red" />
+          <span className="w-3 h-3 rounded-full bg-dot-amber" />
+          <span className="w-3 h-3 rounded-full bg-dot-green" />
         </div>
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-2 bg-[#1c1c22] rounded-md px-3 py-[5px] w-full max-w-xs">
+          <div className="flex items-center gap-2 bg-frame-field rounded-md px-3 py-[5px] w-full max-w-xs">
             <svg
               className="w-3 h-3 text-zinc-500 flex-shrink-0"
               viewBox="0 0 16 16"
@@ -138,7 +138,7 @@ const BrowserFrame = memo(function BrowserFrame({
           sizes="(max-width: 1024px) 100vw, 57vw"
           className="object-contain transition-transform duration-700 group-hover:scale-[1.04]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f12]/60 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-frame/60 via-transparent to-transparent pointer-events-none" />
       </div>
     </div>
   );
@@ -216,7 +216,8 @@ export default function App() {
       const dx = e.changedTouches[0].clientX - touchX.current;
       const dy = e.changedTouches[0].clientY - touchY.current;
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 44) {
-        dx < 0 ? next() : prev();
+        if (dx < 0) next();
+        else prev();
       }
     },
     [next, prev]
@@ -229,10 +230,7 @@ export default function App() {
   const currentAccent = ACCENT[PROJECTS[active].accent];
 
   return (
-    <div
-      className="min-h-screen bg-[#09090b] overflow-x-hidden"
-      style={{ fontFamily: FONT_INTER }}
-    >
+    <div className="min-h-screen bg-bg overflow-x-hidden">
       {/* ── Background layer ── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {/* Ambient blobs */}
@@ -256,26 +254,20 @@ export default function App() {
       <section id="projects" className="relative py-24 lg:py-28">
         <div className="mx-auto max-w-[1280px] px-6">
           {/* ── Header ── */}
-          <div className="flex flex-col items-center text-center mb-16 lg:mb-18">
+          <Reveal className="flex flex-col items-center text-center mb-16 lg:mb-18">
             {/* Badge */}
             <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.09] backdrop-blur-sm mb-7">
               <span
                 className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"
-                style={{ boxShadow: "0 0 7px rgba(52,211,153,0.85)" }}
+                style={{ boxShadow: "0 0 7px var(--pulse-emerald)" }}
               />
-              <span
-                className="text-[13px] font-medium text-zinc-300 tracking-widest uppercase"
-                style={{ fontFamily: FONT_JET_MONO }}
-              >
+              <span className="text-[13px] font-medium text-zinc-300 tracking-widest uppercase">
                 Featured Projects
               </span>
             </div>
 
             {/* Heading */}
-            <h2
-              className="text-[2.6rem] sm:text-5xl lg:text-[3.75rem] font-extrabold leading-[1.08] tracking-tight text-white mb-5"
-              style={{ fontFamily: FONT_OUTFIT }}
-            >
+            <h2 className="text-[2.6rem] sm:text-5xl lg:text-[3.75rem] font-extrabold leading-[1.08] tracking-tight text-white mb-5">
               Things{" "}
               <span className="bg-gradient-to-r from-emerald-400 via-sky-400 to-violet-400 bg-clip-text text-transparent">
                 I&apos;ve Built
@@ -287,9 +279,10 @@ export default function App() {
               A collection of projects that showcase clean code, intuitive
               user experiences, and scalable solutions.
             </p>
-          </div>
+          </Reveal>
 
           {/* ── Carousel ── */}
+          <Reveal delay={0.1} amount={0.1}>
           <div
             ref={wrapRef}
             className="relative overflow-hidden"
@@ -305,8 +298,8 @@ export default function App() {
             />
 
             {/* Side fade masks */}
-            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#09090b] to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#09090b] to-transparent z-10 pointer-events-none" />
+            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-bg to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-bg to-transparent z-10 pointer-events-none" />
 
             {/* Track */}
             <motion.div
@@ -345,10 +338,7 @@ export default function App() {
                         <div
                           className="absolute inset-0 rounded-2xl pointer-events-none"
                           style={{
-                            background: `linear-gradient(135deg, ${a.radial.replace(
-                              "0.07",
-                              "0.05"
-                            )} 0%, transparent 55%)`,
+                            background: `linear-gradient(135deg, ${a.radialSoft} 0%, transparent 55%)`,
                           }}
                         />
                       )}
@@ -369,16 +359,12 @@ export default function App() {
                             {/* Category */}
                             <span
                               className={`inline-flex items-center px-3 py-[5px] rounded-full text-[11px] font-semibold border tracking-wide uppercase mb-4 ${a.badge}`}
-                              style={{ fontFamily: FONT_JET_MONO }}
                             >
                               {project.category}
                             </span>
 
                             {/* Name */}
-                            <h3
-                              className="text-2xl lg:text-[1.7rem] font-bold text-white mb-3 leading-tight tracking-tight "
-                              style={{ fontFamily: FONT_OUTFIT }}
-                            >
+                            <h3 className="text-2xl lg:text-[1.7rem] font-bold text-white mb-3 leading-tight tracking-tight ">
                               {project.name}
                             </h3>
 
@@ -393,7 +379,6 @@ export default function App() {
                                 <span
                                   key={tech}
                                   className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-medium bg-white/[0.05] border border-white/[0.08] text-zinc-300 tracking-wide"
-                                  style={{ fontFamily: FONT_JET_MONO }}
                                 >
                                   {tech}
                                 </span>
@@ -406,6 +391,7 @@ export default function App() {
                             <a
                               href={project.liveUrl}
                               target="_blank"
+                              rel="noopener noreferrer"
                               className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${a.btnGradient} text-white font-semibold text-[13.5px] shadow-lg hover:opacity-90 hover:shadow-xl active:scale-[0.97] transition-all duration-200`}
                             >
                               <Globe className="w-4 h-4" />
@@ -421,6 +407,7 @@ export default function App() {
               })}
             </motion.div>
           </div>
+          </Reveal>
 
           {/* ── Navigation ── */}
           <div className="flex items-center justify-center gap-7 mt-10">
@@ -440,13 +427,14 @@ export default function App() {
                     height: 8,
                     borderRadius: 999,
                     backgroundColor:
-                      idx === active ? currentAccent.pillColor : "rgba(255,255,255,0.18)",
+                      idx === active
+                        ? currentAccent.pillColor
+                        : "rgba(255,255,255,0.18)",
                     border: "none",
                     padding: 0,
                     cursor: "pointer",
                     transition: "all 0.35s cubic-bezier(0.4,0,0.2,1)",
-                    boxShadow:
-                      idx === active ? `0 0 10px ${currentAccent.pillColor}66` : "none",
+                    boxShadow: idx === active ? currentAccent.pillGlow : "none",
                   }}
                 />
               ))}

@@ -1,24 +1,89 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ------------------------------------------------------------------ *
+ *  Design tokens — every literal colour used in the UI lives here.
+ *  Tailwind v4 turns each --color-* into utilities (bg-*, text-*,
+ *  border-*) and also exposes them as CSS vars for inline styles.
+ * ------------------------------------------------------------------ */
+@theme {
+  /* Font */
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+
+  /* Surfaces */
+  --color-bg: #09090b;           /* page background (hero, projects)  */
+  --color-header: #0b0b0d;       /* fixed navbar / mobile menu        */
+  --color-surface: #0b0f1a;      /* skills section, dark button text  */
+  --color-card: #0e1420;         /* service card                     */
+  --color-card-hover: #111927;   /* service card hover               */
+
+  /* Accent-tinted skill panels */
+  --color-panel-emerald: #0a1c14;
+  --color-panel-sky: #091824;
+  --color-panel-violet: #10091e;
+  --color-panel-amber: #1a1408;
+
+  /* Browser mock-up frame (projects) */
+  --color-frame: #0f0f12;
+  --color-frame-bar: #111115;
+  --color-frame-field: #1c1c22;
+
+  /* Text — brightest (base) to dimmest (9) */
+  --color-text: #e8eaf0;
+  --color-text-2: #c4cad6;
+  --color-text-3: #a1a1aa;
+  --color-text-4: #8892a4;
+  --color-text-5: #6b7589;
+  --color-text-6: #71717a;
+  --color-text-7: #525c70;
+  --color-text-8: #52525b;
+  --color-text-9: #3a4256;
+
+  /* Brand accents */
+  --color-emerald: #34d399;
+  --color-emerald-soft: #6ee7b7;
+  --color-emerald-deep: #10b981;
+  --color-sky: #38bdf8;
+  --color-sky-soft: #7dd3fc;
+  --color-sky-deep: #0ea5e9;
+  --color-violet: #a78bfa;
+  --color-violet-soft: #c4b5fd;
+  --color-violet-deep: #8b5cf6;
+  --color-amber: #fbbf24;
+  --color-amber-soft: #fde68a;
+
+  /* Traffic-light dots (browser mock-up) */
+  --color-dot-red: #ff5f57;
+  --color-dot-amber: #febc2e;
+  --color-dot-green: #28c840;
 }
 
+/* Project-carousel accent effects — rgba variants of the brand accents,
+   consumed from inline styles / JS style objects. */
+:root {
+  --glow-emerald: rgba(16, 185, 129, 0.14);
+  --radial-emerald: rgba(16, 185, 129, 0.07);
+  --radial-emerald-soft: rgba(16, 185, 129, 0.05);
+  --pill-glow-emerald: rgba(16, 185, 129, 0.4);
+  --pulse-emerald: rgba(52, 211, 153, 0.85);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --glow-sky: rgba(14, 165, 233, 0.14);
+  --radial-sky: rgba(14, 165, 233, 0.07);
+  --radial-sky-soft: rgba(14, 165, 233, 0.05);
+  --pill-glow-sky: rgba(14, 165, 233, 0.4);
+
+  --glow-violet: rgba(139, 92, 246, 0.14);
+  --radial-violet: rgba(139, 92, 246, 0.07);
+  --radial-violet-soft: rgba(139, 92, 246, 0.05);
+  --pill-glow-violet: rgba(139, 92, 246, 0.4);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }

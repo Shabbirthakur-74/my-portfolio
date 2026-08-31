@@ -47,7 +47,7 @@ export default function Navbar() {
   const closeMenu = useCallback(() => setOpen(false), []);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-[#0B0B0D]/80 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
+    <header className="fixed top-0 inset-x-0 z-50 bg-header/80 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
       <div className="max-w-[1280px] mx-auto px-6 md:px-10 h-18 grid grid-cols-2 md:grid-cols-3 items-center">
         {/* Logo */}
         <Link
@@ -65,7 +65,7 @@ export default function Navbar() {
             />
           </div>
 
-          <span className="font-serif-display text-[13px] lg:text-[20px] font-semibold tracking-tight text-white">
+          <span className="text-[13px] lg:text-[20px] font-semibold tracking-tight text-white">
             Shabbir{" "}
             <span className="italic font-normal text-white/60">Thakur</span>
           </span>
@@ -118,7 +118,7 @@ export default function Navbar() {
           open ? "max-h-96" : "max-h-0"
         }`}
       >
-        <div className="bg-[#0B0B0D]/95 backdrop-blur-2xl border-t border-white/10">
+        <div className="bg-header/95 backdrop-blur-2xl border-t border-white/10">
           <nav className="flex flex-col px-6 py-6 gap-5">
             {nav.map((item) => (
               <Link
