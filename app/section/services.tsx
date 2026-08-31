@@ -159,7 +159,7 @@ const ServiceCard = memo(function ServiceCard({ s }: { s: Service }) {
         </h3>
       </div>
 
-      <p className="text-xs text-text-5 leading-relaxed mb-5 flex-1 text-justify">
+      <p className="text-xs text-text-5 leading-relaxed mb-5 flex-1">
         {s.desc}
       </p>
 
@@ -179,7 +179,7 @@ export default function ServicesSection() {
   return (
     <section
       id="services"
-      className="min-h-screen px-6 md:px-12 pt-28 pb-16 max-w-5xl mx-auto w-full"
+      className="px-6 md:px-12 py-16 md:py-24 max-w-5xl mx-auto w-full"
     >
       <Reveal>
         <p className="text-xs tracking-[0.25em] uppercase mb-3 text-emerald-400 text-center">
@@ -196,7 +196,7 @@ export default function ServicesSection() {
         </div>
 
         <div className="text-center">
-          <p className="text-text-4 text-sm mb-12 max-w-lg mx-auto leading-relaxed">
+          <p className="text-text-4 text-sm mb-8 md:mb-12 max-w-lg mx-auto leading-relaxed">
             From a single landing page to a full-stack web application — I
             deliver clean, maintainable, and production-ready work on time.
           </p>
@@ -206,7 +206,7 @@ export default function ServicesSection() {
       <Stagger
         gap={0.09}
         amount={0.15}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 md:mb-12"
       >
         {services.map((s) => (
           <StaggerItem key={s.title} className="h-full">
@@ -216,7 +216,7 @@ export default function ServicesSection() {
       </Stagger>
 
       <Reveal>
-        <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/4 p-8 md:p-6 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 text-center sm:text-left">
+        <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/4 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 text-center sm:text-left">
           <div>
             <p className="text-[11px] text-emerald-400 tracking-widest uppercase mb-1">
               let&apos;s work together

@@ -192,7 +192,7 @@ export default function Skills() {
   }, []);
 
   return (
-    <section id="skills" className="bg-surface text-text py-24 px-5">
+    <section id="skills" className="bg-surface text-text py-16 md:py-24 px-5">
       <div className="w-full max-w-3xl mx-auto">
         <Reveal>
           <p className="text-center text-xs tracking-[0.25em] uppercase mb-3 text-emerald-soft">
@@ -206,7 +206,7 @@ export default function Skills() {
             </span>
           </h2>
 
-          <p className="text-center text-text-4 text-sm mb-12 max-w-xs mx-auto leading-relaxed">
+          <p className="text-center text-text-4 text-sm mb-8 md:mb-12 max-w-xs mx-auto leading-relaxed">
             Technologies I use to build full-stack web projects  from design to
             deployment.
           </p>
@@ -224,7 +224,7 @@ export default function Skills() {
                 onClick={() => handleSelect(g.category)}
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.96 }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all duration-200 cursor-pointer
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors duration-200 cursor-pointer
                 ${
                   isActive
                     ? gc.tabActive
@@ -248,7 +248,7 @@ export default function Skills() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: EASE }}
-            className={`rounded-2xl border ${c.activeBorder} ${c.activeBg} shadow-xl ${c.glow} p-7`}
+            className={`rounded-2xl border ${c.activeBorder} ${c.activeBg} shadow-xl ${c.glow} p-5 sm:p-7`}
           >
             <div className="flex items-center justify-between mb-7">
               <div className="flex items-center gap-3">
@@ -276,7 +276,7 @@ export default function Skills() {
               </span>
             </div>
 
-            <div className={`grid ${cols} gap-x-10 gap-y-4`}>
+            <div className={`grid ${cols} gap-x-6 sm:gap-x-10 gap-y-4`}>
               {group.items.map((item, i) => (
                 <SkillBar
                   key={item.name}

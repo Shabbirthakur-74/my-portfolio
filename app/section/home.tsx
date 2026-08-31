@@ -46,7 +46,7 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen w-full flex items-center overflow-hidden bg-bg"
+      className="relative min-h-svh w-full flex items-center overflow-hidden bg-bg"
     >
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -77,10 +77,10 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-28 grid grid-cols-1 lg:grid-cols-[7fr_5fr] gap-16 items-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pt-28 pb-20 md:py-28 grid grid-cols-1 lg:grid-cols-[7fr_5fr] gap-10 lg:gap-16 items-center">
         {/* LEFT */}
         <motion.div
-          className="flex flex-col gap-7"
+          className="flex flex-col gap-5 md:gap-7"
           variants={container}
           initial="hidden"
           animate="show"
@@ -102,7 +102,7 @@ export default function Hero() {
 
           {/* Heading */}
           <motion.div variants={item}>
-            <h1 className="text-[clamp(2.8rem,7vw,5.5rem)] font-extrabold leading-[1.05] tracking-tight text-white mb-3">
+            <h1 className="text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold leading-[1.05] tracking-tight text-white mb-3">
               Hi, I&apos;m{" "}
               <span
                 className="text-transparent bg-clip-text"
@@ -126,7 +126,7 @@ export default function Hero() {
           {/* Description */}
           <motion.p
             variants={item}
-            className="text-text-6 leading-[1.8] text-[15px] max-w-lg text-justify"
+            className="text-text-6 leading-[1.8] text-[15px] max-w-lg text-left md:text-justify"
           >
             Based out of Bir, Himachal Pradesh — home to Billing,
             the highest paragliding site in Asia. As a full-stack developer,

@@ -230,7 +230,7 @@ export default function App() {
   const currentAccent = ACCENT[PROJECTS[active].accent];
 
   return (
-    <div className="min-h-screen bg-bg overflow-x-hidden">
+    <div className="bg-bg overflow-x-hidden">
       {/* ── Background layer ── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {/* Ambient blobs */}
@@ -251,10 +251,10 @@ export default function App() {
       </div>
 
       {/* ── Section ── */}
-      <section id="projects" className="relative py-24 lg:py-28">
+      <section id="projects" className="relative py-16 md:py-24">
         <div className="mx-auto max-w-[1280px] px-6">
           {/* ── Header ── */}
-          <Reveal className="flex flex-col items-center text-center mb-16 lg:mb-18">
+          <Reveal className="flex flex-col items-center text-center mb-10 md:mb-14">
             {/* Badge */}
             <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.09] backdrop-blur-sm mb-7">
               <span
@@ -267,7 +267,7 @@ export default function App() {
             </div>
 
             {/* Heading */}
-            <h2 className="text-[2.6rem] sm:text-5xl lg:text-[3.75rem] font-extrabold leading-[1.08] tracking-tight text-white mb-5">
+            <h2 className="text-[2.1rem] sm:text-5xl lg:text-[3.75rem] font-extrabold leading-[1.08] tracking-tight text-white mb-4 md:mb-5">
               Things{" "}
               <span className="bg-gradient-to-r from-emerald-400 via-sky-400 to-violet-400 bg-clip-text text-transparent">
                 I&apos;ve Built
@@ -275,7 +275,7 @@ export default function App() {
             </h2>
 
             {/* Subtitle */}
-            <p className="text-zinc-400 text-lg leading-relaxed max-w-[640px]">
+            <p className="text-zinc-400 text-base sm:text-lg leading-relaxed max-w-[640px]">
               A collection of projects that showcase clean code, intuitive
               user experiences, and scalable solutions.
             </p>
@@ -298,8 +298,8 @@ export default function App() {
             />
 
             {/* Side fade masks */}
-            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-bg to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-bg to-transparent z-10 pointer-events-none" />
+            <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 lg:w-20 bg-gradient-to-r from-bg to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 lg:w-20 bg-gradient-to-l from-bg to-transparent z-10 pointer-events-none" />
 
             {/* Track */}
             <motion.div
@@ -369,7 +369,7 @@ export default function App() {
                             </h3>
 
                             {/* Description */}
-                            <p className="text-zinc-400 text-sm lg:text-[15px] leading-relaxed mb-5 text-justify">
+                            <p className="text-zinc-400 text-sm lg:text-[15px] leading-relaxed mb-5">
                               {project.description}
                             </p>
 

@@ -42,11 +42,11 @@ export default function Contact() {
       id="contact"
       className="border-t border-zinc-800 bg-black text-zinc-400"
     >
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 px-6 py-10">
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-5 px-6 py-8 md:gap-6 md:py-10">
         {/* Links */}
         <Stagger
           gap={0.08}
-          className="flex flex-wrap items-center justify-center gap-8 text-lg"
+          className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-8 text-base sm:text-lg"
         >
           {links.map(({ label, href, icon: Icon, hover, external }) => (
             <StaggerItem key={label}>
@@ -56,9 +56,9 @@ export default function Contact() {
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}
                 whileHover={{ y: -3 }}
-                className={`flex items-center gap-2 transition ${hover}`}
+                className={`flex items-center gap-2 py-1 transition ${hover}`}
               >
-                <Icon size={20} />
+                <Icon size={20} className="shrink-0" />
                 <span>{label}</span>
               </motion.a>
             </StaggerItem>
