@@ -16,14 +16,14 @@ const nav: { label: string; href: string }[] = [
 const socialLinks = [
   {
     label: "Call",
-    href: "tel:+917018157169",
+    href: "tel:+919882815441",
     icon: Phone,
     hoverClass: "hover:text-red-400",
     external: false,
   },
   {
     label: "WhatsApp",
-    href: "https://wa.me/917018157169",
+    href: "https://wa.me/919882815441",
     icon: FaWhatsapp,
     hoverClass: "hover:text-green-400",
     external: true,

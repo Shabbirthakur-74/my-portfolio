@@ -15,14 +15,14 @@ const links = [
   },
   {
     label: "70181 57169",
-    href: "tel:+917018157169",
+    href: "tel:+919882815441",
     icon: FiPhone,
     hover: "hover:text-red-400",
     external: false,
   },
   {
     label: "WhatsApp",
-    href: "https://wa.me/917018157169",
+    href: "https://wa.me/919882815441",
     icon: FaWhatsapp,
     hover: "hover:text-green-400",
     external: true,
