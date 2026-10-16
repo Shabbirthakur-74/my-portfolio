@@ -14,7 +14,7 @@ const links = [
     external: false,
   },
   {
-    label: "70181 57169",
+    label: "98828 15441",
     href: "tel:+919882815441",
     icon: FiPhone,
     hover: "hover:text-red-400",
