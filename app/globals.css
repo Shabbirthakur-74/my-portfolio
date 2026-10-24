@@ -55,6 +55,11 @@
   --color-dot-red: #ff5f57;
   --color-dot-amber: #febc2e;
   --color-dot-green: #28c840;
+
+  /* Text on accent buttons */
+  --color-ink: #09090b;          /* dark text on light gradients     */
+  --color-on-emerald: #0b0f1a;   /* text on bg-emerald-400 buttons   */
+  --color-on-accent: #ffffff;    /* text on saturated gradients      */
 }
 
 /* Project-carousel accent effects — rgba variants of the brand accents,
@@ -87,4 +92,9 @@ body {
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-emerald) 35%, transparent);
+  color: var(--color-text);
 }

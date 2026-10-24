@@ -1,9 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useState } from "react";
 import Link from "next/link";
-import { Menu, X, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 import { FaLinkedin, FaWhatsapp } from "react-icons/fa6";
 
 const nav: { label: string; href: string }[] = [
@@ -41,20 +40,15 @@ const socialIconBaseClass =
   "w-11 h-11 rounded-full flex items-center justify-center border border-white/10 text-white/70 hover:bg-white/10 transition-all duration-300";
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
-
-  const toggleMenu = useCallback(() => setOpen((prev) => !prev), []);
-  const closeMenu = useCallback(() => setOpen(false), []);
-
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-header/80 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
-      <div className="max-w-[1280px] mx-auto px-6 md:px-10 h-18 grid grid-cols-2 md:grid-cols-3 items-center">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 md:px-10 h-16 md:h-18 grid grid-cols-[1fr_auto] md:grid-cols-3 items-center">
         {/* Logo */}
         <Link
           href="#home"
           className="flex items-center gap-3 hover:opacity-90 transition-opacity"
         >
-          <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center">
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center">
             <Image
               src="/logo.png"
               alt="Logo"
@@ -65,7 +59,7 @@ export default function Navbar() {
             />
           </div>
 
-          <span className="text-[13px] lg:text-[20px] font-semibold tracking-tight text-white">
+          <span className="text-[15px] lg:text-[20px] font-semibold tracking-tight text-white">
             Shabbir{" "}
             <span className="italic font-normal text-white/60">Thakur</span>
           </span>
@@ -100,37 +94,23 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Mobile Toggle */}
-        <div className="flex justify-end md:hidden">
-          <button
-            onClick={toggleMenu}
-            aria-label="Toggle Menu"
-            className="w-11 h-11 rounded-full flex items-center justify-center border border-white/10 text-white hover:bg-white/10 transition-all duration-300"
+        {/* Mobile CTA — section links live in <BottomNav /> */}
+        <div className="flex items-center justify-end gap-2 md:hidden">
+          <Link
+            href="https://wa.me/919882815441"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="WhatsApp"
+            className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-green-400 bg-green-400/5 active:scale-95 transition"
           >
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <div
-        className={`md:hidden overflow-hidden transition-all duration-300 ${
-          open ? "max-h-96" : "max-h-0"
-        }`}
-      >
-        <div className="bg-header/95 backdrop-blur-2xl border-t border-white/10">
-          <nav className="flex flex-col px-6 py-6 gap-5">
-            {nav.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                onClick={closeMenu}
-                className="text-white/80 hover:text-white text-lg font-medium transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+            <FaWhatsapp size={18} />
+          </Link>
+          <Link
+            href="#contact"
+            className="h-10 px-4 rounded-full flex items-center gap-1.5 bg-emerald-400 text-on-emerald text-sm font-semibold active:scale-95 transition"
+          >
+            Hire me
+          </Link>
         </div>
       </div>
     </header>

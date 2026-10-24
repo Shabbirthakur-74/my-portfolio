@@ -192,7 +192,7 @@ export default function Skills() {
   }, []);
 
   return (
-    <section id="skills" className="bg-surface text-text py-16 md:py-24 px-5">
+    <section id="skills" className="bg-surface text-text py-14 md:py-24 px-5">
       <div className="w-full max-w-3xl mx-auto">
         <Reveal>
           <p className="text-center text-xs tracking-[0.25em] uppercase mb-3 text-emerald-soft">
@@ -212,31 +212,46 @@ export default function Skills() {
           </p>
         </Reveal>
 
-        <Reveal delay={0.1} className="flex flex-wrap justify-center gap-2 mb-8">
+        {/* Tabs — 2×2 tiles on phones, a single pill row from sm */}
+        <Reveal
+          delay={0.1}
+          className="grid grid-cols-2 gap-2.5 mb-6 sm:flex sm:flex-wrap sm:justify-center sm:gap-2 sm:mb-8"
+          role="tablist"
+        >
           {skillGroups.map((g) => {
             const gc = colorMap[g.color];
             const isActive = active === g.category;
+            const TabIcon = g.icon;
 
             return (
               <motion.button
                 key={g.category}
                 type="button"
+                role="tab"
+                aria-selected={isActive}
                 onClick={() => handleSelect(g.category)}
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.96 }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors duration-200 cursor-pointer
+                className={`flex flex-col items-start gap-2 p-3.5 rounded-2xl border text-left text-sm font-medium transition-colors duration-200 cursor-pointer
+                sm:flex-row sm:items-center sm:gap-2 sm:px-4 sm:py-2 sm:rounded-xl
                 ${
                   isActive
                     ? gc.tabActive
-                    : "border-white/6 text-text-4 hover:bg-white/4 hover:text-text-2 hover:border-white/10"
+                    : "border-white/6 bg-white/[0.02] text-text-4 hover:bg-white/4 hover:text-text-2 hover:border-white/10"
                 }`}
               >
+                <span className="flex w-full items-center justify-between sm:hidden">
+                  <TabIcon className="h-5 w-5" strokeWidth={1.8} />
+                  <span className="text-[11px] tabular-nums opacity-70">
+                    {g.items.length}
+                  </span>
+                </span>
                 <span
-                  className={`w-1.5 h-1.5 rounded-full ${
+                  className={`hidden sm:inline-block w-1.5 h-1.5 rounded-full ${
                     isActive ? gc.dot : "bg-text-9"
                   }`}
                 />
-                {g.category}
+                <span className="leading-tight">{g.category}</span>
               </motion.button>
             );
           })}

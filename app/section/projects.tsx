@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useMemo, memo } from "react";
-import { ChevronLeft, ChevronRight, ArrowUpRight, Globe } from "lucide-react";
-import { motion } from "framer-motion";
+import { useState, memo } from "react";
+import Link from "next/link";
+import { ArrowUpRight, ArrowRight, Globe } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { FaGithub } from "react-icons/fa6";
 import Image from "next/image";
-import { Reveal } from "./reveal";
+import { Reveal, Stagger, StaggerItem } from "./reveal";
 
 interface Project {
   id: number;
@@ -67,168 +69,363 @@ const PROJECTS: Project[] = [
 const ACCENT = {
   emerald: {
     badge: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
-    pill: "bg-emerald-500/[0.08] border-emerald-500/15 text-emerald-300",
+    text: "text-emerald-400",
+    ring: "border-emerald-400/30",
+    bar: "from-emerald-400 to-sky-400",
     btnGradient: "from-emerald-500 to-sky-400",
     glow: "0 0 80px var(--glow-emerald)",
     radial: "var(--radial-emerald)",
-    radialSoft: "var(--radial-emerald-soft)",
-    pillColor: "var(--color-emerald-deep)",
-    pillGlow: "0 0 10px var(--pill-glow-emerald)",
   },
   sky: {
     badge: "bg-sky-500/10 border-sky-500/20 text-sky-400",
-    pill: "bg-sky-500/[0.08] border-sky-500/15 text-sky-300",
+    text: "text-sky-400",
+    ring: "border-sky-400/30",
+    bar: "from-sky-400 to-violet-400",
     btnGradient: "from-sky-500 to-violet-500",
     glow: "0 0 80px var(--glow-sky)",
     radial: "var(--radial-sky)",
-    radialSoft: "var(--radial-sky-soft)",
-    pillColor: "var(--color-sky-deep)",
-    pillGlow: "0 0 10px var(--pill-glow-sky)",
   },
   violet: {
     badge: "bg-violet-500/10 border-violet-500/20 text-violet-400",
-    pill: "bg-violet-500/[0.08] border-violet-500/15 text-violet-300",
+    text: "text-violet-400",
+    ring: "border-violet-400/30",
+    bar: "from-violet-400 to-sky-400",
     btnGradient: "from-violet-500 to-sky-400",
     glow: "0 0 80px var(--glow-violet)",
     radial: "var(--radial-violet)",
-    radialSoft: "var(--radial-violet-soft)",
-    pillColor: "var(--color-violet-deep)",
-    pillGlow: "0 0 10px var(--pill-glow-violet)",
   },
 } as const;
+
+const EASE = [0.25, 0.46, 0.45, 0.94] as const;
+
+const num = (i: number) => String(i + 1).padStart(2, "0");
+const host = (url: string) => new URL(url).host;
 
 const BrowserFrame = memo(function BrowserFrame({
   src,
   alt,
+  url,
 }: {
   src: string;
   alt: string;
+  url: string;
 }) {
   return (
-    <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-frame shadow-2xl transition-colors duration-500 group-hover:border-white/[0.14]">
+    <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-frame shadow-2xl">
       {/* Chrome bar */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-frame-bar border-b border-white/[0.06]">
+      <div className="flex items-center gap-3 px-4 py-2.5 bg-frame-bar border-b border-white/[0.06]">
         <div className="flex gap-[6px]">
           <span className="w-3 h-3 rounded-full bg-dot-red" />
           <span className="w-3 h-3 rounded-full bg-dot-amber" />
           <span className="w-3 h-3 rounded-full bg-dot-green" />
         </div>
         <div className="flex-1 flex justify-center">
-          <div className="flex items-center gap-2 bg-frame-field rounded-md px-3 py-[5px] w-full max-w-xs">
-            <svg
-              className="w-3 h-3 text-zinc-500 flex-shrink-0"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            >
-              <circle cx="8" cy="8" r="6" />
-              <path d="M2 8h12M8 2C6.5 4.5 6.5 11.5 8 14M8 2c1.5 2.5 1.5 9.5 0 12" />
-            </svg>
-            <div className="h-[6px] bg-white/10 rounded-full flex-1" />
+          <div className="flex items-center gap-2 bg-frame-field rounded-md px-3 py-1 w-full max-w-xs">
+            <Globe className="w-3 h-3 text-zinc-500 flex-shrink-0" />
+            <span className="truncate font-mono text-[11px] text-zinc-400">{host(url)}</span>
           </div>
         </div>
       </div>
       {/* Screenshot */}
-      <div className="overflow-hidden relative h-52 sm:h-60 lg:h-72">
+      <div className="relative aspect-[2/1] overflow-hidden">
         <Image
           src={src}
           alt={alt}
           fill
-          sizes="(max-width: 1024px) 100vw, 57vw"
-          className="object-contain transition-transform duration-700 group-hover:scale-[1.04]"
+          sizes="(max-width: 1280px) 50vw, 560px"
+          className="object-cover object-top"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-frame/60 via-transparent to-transparent pointer-events-none" />
       </div>
     </div>
   );
 });
 
-const NavButton = memo(function NavButton({
-  onClick,
-  disabled,
-  children,
+/* ── Phones: one card per project, full-width screenshot ── */
+const ProjectCard = memo(function ProjectCard({
+  project,
+  index,
 }: {
-  onClick: () => void;
-  disabled: boolean;
-  children: React.ReactNode;
+  project: Project;
+  index: number;
 }) {
+  const [expanded, setExpanded] = useState(false);
+  const a = ACCENT[project.accent];
+
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className="
-        w-11 h-11 rounded-full flex items-center justify-center
-        bg-white/[0.05] border border-white/[0.09] text-zinc-400
-        hover:bg-white/[0.1] hover:border-white/[0.18] hover:text-white
-        hover:shadow-[0_0_20px_rgba(255,255,255,0.06)]
-        disabled:opacity-25 disabled:cursor-not-allowed
-        transition-all duration-200 backdrop-blur-sm
-      "
+    <article
+      className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-md"
+      style={{ boxShadow: a.glow }}
     >
-      {children}
-    </button>
+      {/* Screenshot */}
+      <a
+        href={project.liveUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Open ${project.name}`}
+        className="relative block aspect-[2/1] overflow-hidden bg-frame"
+      >
+        <Image
+          src={project.image}
+          alt={`${project.name} screenshot`}
+          fill
+          sizes="100vw"
+          className="object-cover object-top"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/10 to-transparent" />
+        <span className="absolute left-3 top-3 rounded-full bg-black/60 px-2.5 py-1 font-mono text-[11px] text-white/80 backdrop-blur-md">
+          {String(index + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}
+        </span>
+        <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white/90 backdrop-blur-md">
+          <ArrowUpRight className="h-4 w-4" />
+        </span>
+      </a>
+
+      {/* Info */}
+      <div className="relative -mt-6 flex flex-col gap-3 p-5 pt-0">
+        <span
+          className={`w-fit rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${a.badge}`}
+        >
+          {project.category}
+        </span>
+        <h3 className="text-xl font-bold leading-tight tracking-tight text-white">
+          {project.name}
+        </h3>
+
+        <div>
+          <p
+            className={`text-sm leading-relaxed text-zinc-400 ${
+              expanded ? "" : "line-clamp-3"
+            }`}
+          >
+            {project.description}
+          </p>
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="mt-1 text-xs font-medium text-zinc-300 underline-offset-4 hover:underline"
+          >
+            {expanded ? "Show less" : "Read more"}
+          </button>
+        </div>
+
+        {/* Stack */}
+        <ul className="flex flex-wrap gap-2">
+          {project.stack.map((tech) => (
+            <li
+              key={tech}
+              className="rounded-md border border-white/[0.08] bg-white/[0.05] px-2.5 py-1 text-[11px] font-medium text-zinc-300"
+            >
+              {tech}
+            </li>
+          ))}
+        </ul>
+
+        <a
+          href={project.liveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`mt-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r ${a.btnGradient} py-3 text-sm font-semibold text-on-accent shadow-lg active:scale-[0.98] transition`}
+        >
+          <Globe className="h-4 w-4" />
+          Visit live site
+          <ArrowUpRight className="h-3.5 w-3.5" />
+        </a>
+      </div>
+    </article>
   );
 });
 
-export default function App() {
-  const [active, setActive] = useState(0);
-  const [wrapW, setWrapW] = useState(1100);
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const touchX = useRef(0);
-  const touchY = useRef(0);
-
-  useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([e]) => setWrapW(e.contentRect.width));
-    ro.observe(el);
-    setWrapW(el.offsetWidth);
-    return () => ro.disconnect();
-  }, []);
-
-  const isMobile = wrapW < 640;
-  const isTablet = wrapW >= 640 && wrapW < 1024;
-
-  const { cardW, trackX } = useMemo(() => {
-    const cardFrac = isMobile ? 0.92 : isTablet ? 0.88 : 0.82;
-    const gap = 24;
-    const w = wrapW * cardFrac;
-    const x = (wrapW - w) / 2 - active * (w + gap);
-    return { cardW: w, trackX: x };
-  }, [wrapW, isMobile, isTablet, active]);
-
-  const prev = useCallback(() => {
-    setActive((i) => Math.max(0, i - 1));
-  }, []);
-
-  const next = useCallback(() => {
-    setActive((i) => Math.min(PROJECTS.length - 1, i + 1));
-  }, []);
-
-  const onTouchStart = useCallback((e: React.TouchEvent) => {
-    touchX.current = e.touches[0].clientX;
-    touchY.current = e.touches[0].clientY;
-  }, []);
-
-  const onTouchEnd = useCallback(
-    (e: React.TouchEvent) => {
-      const dx = e.changedTouches[0].clientX - touchX.current;
-      const dy = e.changedTouches[0].clientY - touchY.current;
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 44) {
-        if (dx < 0) next();
-        else prev();
-      }
-    },
-    [next, prev]
+/* ── Phones & tablets: vertical feed ── */
+function ProjectFeed() {
+  return (
+    <Stagger gap={0.1} amount={0.05} className="mx-auto flex max-w-2xl flex-col gap-5 lg:hidden">
+      {PROJECTS.map((project, i) => (
+        <StaggerItem key={project.id}>
+          <ProjectCard project={project} index={i} />
+        </StaggerItem>
+      ))}
+    </Stagger>
   );
+}
 
-  const handleSelect = useCallback((idx: number) => {
-    setActive(idx);
-  }, []);
+/* ── Desktop: list + detail explorer (mirrors the Services section) ── */
+function ProjectExplorer() {
+  const [active, setActive] = useState(0);
+  const p = PROJECTS[active];
+  const a = ACCENT[p.accent];
 
-  const currentAccent = ACCENT[PROJECTS[active].accent];
+  return (
+    <Reveal amount={0.15} className="hidden lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-6 xl:gap-8">
+      {/* List */}
+      <div className="flex flex-col gap-4 self-start lg:sticky lg:top-24">
+        <div role="tablist" aria-label="Projects" className="flex flex-col gap-2">
+          {PROJECTS.map((item, i) => {
+            const ia = ACCENT[item.accent];
+            const isActive = i === active;
 
+            return (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActive(i)}
+                className={`group relative flex items-center gap-4 rounded-2xl border px-4 py-3.5 text-left transition-colors duration-300 cursor-pointer ${
+                  isActive
+                    ? "border-white/12 bg-card"
+                    : "border-transparent hover:border-white/8 hover:bg-card/50"
+                }`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="proj-indicator"
+                    className={`absolute left-0 top-3 bottom-3 w-1 rounded-full bg-gradient-to-b ${ia.bar}`}
+                    transition={{ type: "spring", stiffness: 400, damping: 34 }}
+                  />
+                )}
+                <span className={`font-mono text-xs ${isActive ? ia.text : "text-text-8"}`}>
+                  {num(i)}
+                </span>
+                <span
+                  className={`relative h-11 w-20 shrink-0 overflow-hidden rounded-lg border transition-all duration-300 ${
+                    isActive
+                      ? "border-white/15"
+                      : "border-white/8 opacity-60 grayscale group-hover:opacity-90 group-hover:grayscale-0"
+                  }`}
+                >
+                  <Image
+                    src={item.image}
+                    alt=""
+                    fill
+                    sizes="80px"
+                    className="object-cover object-top"
+                  />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span
+                    className={`block truncate font-semibold transition-colors ${
+                      isActive ? "text-text" : "text-text-4 group-hover:text-text-2"
+                    }`}
+                  >
+                    {item.name}
+                  </span>
+                  <span className="block truncate text-xs text-text-7">{item.category}</span>
+                </span>
+                <ArrowRight
+                  className={`h-4 w-4 shrink-0 transition-all duration-300 ${
+                    isActive
+                      ? `${ia.text} translate-x-0 opacity-100`
+                      : "-translate-x-2 opacity-0 group-hover:opacity-50"
+                  }`}
+                />
+              </button>
+            );
+          })}
+        </div>
+
+        {/* More work */}
+        <a
+          href="https://github.com/Shabbirthakur-74"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-4 rounded-2xl border border-dashed border-white/12 px-5 py-4 transition-colors hover:border-white/20 hover:bg-card/50"
+        >
+          <FaGithub className="h-6 w-6 shrink-0 text-text-4 group-hover:text-text" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold text-text-2">More on GitHub</span>
+            <span className="block text-xs text-text-7">Code, experiments and side projects</span>
+          </span>
+          <ArrowUpRight className="h-4 w-4 text-text-6 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+        </a>
+      </div>
+
+      {/* Detail panel */}
+      <div className="relative">
+        <AnimatePresence mode="wait">
+          <motion.article
+            key={p.id}
+            role="tabpanel"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.35, ease: EASE }}
+            className={`relative overflow-hidden rounded-3xl border bg-card p-5 xl:p-6 ${a.ring}`}
+            style={{ boxShadow: a.glow }}
+          >
+            <span className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${a.bar}`} />
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background: `radial-gradient(ellipse 70% 50% at 50% 0%, ${a.radial} 0%, transparent 70%)`,
+              }}
+            />
+
+            <div className="relative flex flex-col gap-4">
+              <a
+                href={p.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Open ${p.name}`}
+                className="block transition-transform duration-500 hover:-translate-y-1"
+              >
+                <BrowserFrame src={p.image} alt={`${p.name} screenshot`} url={p.liveUrl} />
+              </a>
+
+              <div className="flex flex-col gap-2">
+                <span
+                  className={`w-fit rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${a.badge}`}
+                >
+                  {p.category}
+                </span>
+                <h3 className="text-xl xl:text-2xl font-bold tracking-tight text-text">
+                  {p.name}
+                </h3>
+                <p className="text-sm leading-relaxed text-text-4">{p.description}</p>
+              </div>
+
+              <div>
+                <p className="mb-2 text-[11px] uppercase tracking-widest text-text-6">
+                  Built with
+                </p>
+                <ul className="flex flex-wrap gap-1.5">
+                  {p.stack.map((t) => (
+                    <li
+                      key={t}
+                      className="rounded-md border border-white/8 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-text-3"
+                    >
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={p.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-2 rounded-xl bg-gradient-to-r ${a.btnGradient} px-5 py-2.5 text-sm font-semibold text-on-accent shadow-lg transition hover:opacity-90`}
+                >
+                  <Globe className="h-4 w-4" />
+                  Visit live site
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+                <Link
+                  href="#contact"
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/12 px-5 py-2.5 text-sm font-semibold text-text-2 transition-colors hover:bg-white/5"
+                >
+                  Start a similar project
+                </Link>
+              </div>
+            </div>
+          </motion.article>
+        </AnimatePresence>
+      </div>
+    </Reveal>
+  );
+}
+
+export default function Projects() {
   return (
     <div className="bg-bg overflow-x-hidden">
       {/* ── Background layer ── */}
@@ -242,7 +439,7 @@ export default function App() {
           className="absolute inset-0"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+              "linear-gradient(color-mix(in oklab, var(--color-white) 4%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--color-white) 4%, transparent) 1px, transparent 1px)",
             backgroundSize: "72px 72px",
             maskImage:
               "radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)",
@@ -251,199 +448,40 @@ export default function App() {
       </div>
 
       {/* ── Section ── */}
-      <section id="projects" className="relative py-16 md:py-24">
-        <div className="mx-auto max-w-[1280px] px-6">
+      <section id="projects" className="relative py-14 md:py-24">
+        <div className="mx-auto max-w-6xl px-5 sm:px-6 md:px-12">
           {/* ── Header ── */}
-          <Reveal className="flex flex-col items-center text-center mb-10 md:mb-14">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.09] backdrop-blur-sm mb-7">
-              <span
-                className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"
-                style={{ boxShadow: "0 0 7px var(--pulse-emerald)" }}
-              />
-              <span className="text-[13px] font-medium text-zinc-300 tracking-widest uppercase">
-                Featured Projects
-              </span>
+          <Reveal className="mb-8 md:mb-12 flex flex-col items-center gap-4 text-center">
+            <div className="flex flex-col items-center">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.09] backdrop-blur-sm mb-5">
+                <span
+                  className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"
+                  style={{ boxShadow: "0 0 7px var(--pulse-emerald)" }}
+                />
+                <span className="text-[13px] font-medium text-zinc-300 tracking-widest uppercase">
+                  Featured Projects
+                </span>
+              </div>
+
+              {/* Heading */}
+              <h2 className="text-[2.1rem] sm:text-5xl font-extrabold leading-[1.08] tracking-tight text-white">
+                Things{" "}
+                <span className="bg-gradient-to-r from-emerald-400 via-sky-400 to-violet-400 bg-clip-text text-transparent">
+                  I&apos;ve Built
+                </span>
+              </h2>
             </div>
 
-            {/* Heading */}
-            <h2 className="text-[2.1rem] sm:text-5xl lg:text-[3.75rem] font-extrabold leading-[1.08] tracking-tight text-white mb-4 md:mb-5">
-              Things{" "}
-              <span className="bg-gradient-to-r from-emerald-400 via-sky-400 to-violet-400 bg-clip-text text-transparent">
-                I&apos;ve Built
-              </span>
-            </h2>
-
             {/* Subtitle */}
-            <p className="text-zinc-400 text-base sm:text-lg leading-relaxed max-w-[640px]">
+            <p className="text-zinc-400 text-sm leading-relaxed max-w-lg">
               A collection of projects that showcase clean code, intuitive
               user experiences, and scalable solutions.
             </p>
           </Reveal>
 
-          {/* ── Carousel ── */}
-          <Reveal delay={0.1} amount={0.1}>
-          <div
-            ref={wrapRef}
-            className="relative overflow-hidden"
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
-          >
-            {/* Active card radial glow */}
-            <div
-              className="absolute inset-0 pointer-events-none transition-all duration-700"
-              style={{
-                background: `radial-gradient(ellipse 55% 45% at 50% 55%, ${currentAccent.radial} 0%, transparent 65%)`,
-              }}
-            />
-
-            {/* Side fade masks */}
-            <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 lg:w-20 bg-gradient-to-r from-bg to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 lg:w-20 bg-gradient-to-l from-bg to-transparent z-10 pointer-events-none" />
-
-            {/* Track */}
-            <motion.div
-              className="flex"
-              style={{ gap: 24 }}
-              animate={{ x: trackX }}
-              transition={{ type: "spring", stiffness: 280, damping: 34, mass: 0.85 }}
-            >
-              {PROJECTS.map((project, idx) => {
-                const isActive = idx === active;
-                const a = ACCENT[project.accent];
-                return (
-                  <motion.div
-                    key={project.id}
-                    className="flex-none group cursor-pointer"
-                    style={{ width: cardW }}
-                    animate={{
-                      scale: isActive ? 1 : 0.93,
-                      opacity: isActive ? 1 : 0.5,
-                    }}
-                    transition={{ duration: 0.42, ease: [0.25, 0.46, 0.45, 0.94] }}
-                    onClick={() => handleSelect(idx)}
-                  >
-                    {/* Card */}
-                    <div
-                      className="relative rounded-2xl border bg-white/[0.025] backdrop-blur-md p-6 lg:p-8 transition-all duration-500"
-                      style={{
-                        borderColor: isActive
-                          ? "rgba(255,255,255,0.11)"
-                          : "rgba(255,255,255,0.05)",
-                        boxShadow: isActive ? a.glow : "none",
-                      }}
-                    >
-                      {/* Inner gradient tint for active card */}
-                      {isActive && (
-                        <div
-                          className="absolute inset-0 rounded-2xl pointer-events-none"
-                          style={{
-                            background: `linear-gradient(135deg, ${a.radialSoft} 0%, transparent 55%)`,
-                          }}
-                        />
-                      )}
-
-                      {/* Two-column layout */}
-                      <div className="relative flex flex-col lg:flex-row gap-6 lg:gap-8">
-                        {/* Left — browser mockup */}
-                        <div className="w-full lg:w-[57%] flex-shrink-0">
-                          <BrowserFrame
-                            src={project.image}
-                            alt={`${project.name} screenshot`}
-                          />
-                        </div>
-
-                        {/* Right — project info */}
-                        <div className="flex flex-col justify-between flex-1 min-w-0 pt-1">
-                          <div>
-                            {/* Category */}
-                            <span
-                              className={`inline-flex items-center px-3 py-[5px] rounded-full text-[11px] font-semibold border tracking-wide uppercase mb-4 ${a.badge}`}
-                            >
-                              {project.category}
-                            </span>
-
-                            {/* Name */}
-                            <h3 className="text-2xl lg:text-[1.7rem] font-bold text-white mb-3 leading-tight tracking-tight ">
-                              {project.name}
-                            </h3>
-
-                            {/* Description */}
-                            <p className="text-zinc-400 text-sm lg:text-[15px] leading-relaxed mb-5">
-                              {project.description}
-                            </p>
-
-                            {/* Tech stack */}
-                            <div className="flex flex-wrap gap-2 mb-7">
-                              {project.stack.map((tech) => (
-                                <span
-                                  key={tech}
-                                  className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-medium bg-white/[0.05] border border-white/[0.08] text-zinc-300 tracking-wide"
-                                >
-                                  {tech}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* CTA buttons */}
-                          <div className="flex flex-col sm:flex-row gap-3">
-                            <a
-                              href={project.liveUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${a.btnGradient} text-white font-semibold text-[13.5px] shadow-lg hover:opacity-90 hover:shadow-xl active:scale-[0.97] transition-all duration-200`}
-                            >
-                              <Globe className="w-4 h-4" />
-                              Visit
-                              <ArrowUpRight className="w-3.5 h-3.5" />
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          </div>
-          </Reveal>
-
-          {/* ── Navigation ── */}
-          <div className="flex items-center justify-center gap-7 mt-10">
-            <NavButton onClick={prev} disabled={active === 0}>
-              <ChevronLeft className="w-5 h-5" />
-            </NavButton>
-
-            {/* Pagination pills */}
-            <div className="flex items-center gap-2">
-              {PROJECTS.map((p, idx) => (
-                <button
-                  key={p.id}
-                  onClick={() => handleSelect(idx)}
-                  aria-label={`Go to project ${idx + 1}`}
-                  style={{
-                    width: idx === active ? 28 : 8,
-                    height: 8,
-                    borderRadius: 999,
-                    backgroundColor:
-                      idx === active
-                        ? currentAccent.pillColor
-                        : "rgba(255,255,255,0.18)",
-                    border: "none",
-                    padding: 0,
-                    cursor: "pointer",
-                    transition: "all 0.35s cubic-bezier(0.4,0,0.2,1)",
-                    boxShadow: idx === active ? currentAccent.pillGlow : "none",
-                  }}
-                />
-              ))}
-            </div>
-
-            <NavButton onClick={next} disabled={active === PROJECTS.length - 1}>
-              <ChevronRight className="w-5 h-5" />
-            </NavButton>
-          </div>
+          <ProjectFeed />
+          <ProjectExplorer />
         </div>
       </section>
     </div>

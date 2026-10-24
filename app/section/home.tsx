@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
-import { FiMail } from "react-icons/fi";
+import { FiMail, FiMapPin, FiClock, FiZap } from "react-icons/fi";
 
 const socialLinks = [
   {
@@ -25,6 +25,12 @@ const socialLinks = [
     hoverClass: "hover:border-emerald-500/60 hover:text-emerald-400",
     icon: FiMail,
   },
+] as const;
+
+const quickFacts = [
+  { label: "Bir, Himachal Pradesh", icon: FiMapPin, className: "text-sky-400" },
+  { label: "Open to freelance", icon: FiZap, className: "text-emerald-400" },
+  { label: "Replies within 24h", icon: FiClock, className: "text-violet-400" },
 ] as const;
 
 const socialIconBaseClass =
@@ -77,7 +83,7 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pt-28 pb-20 md:py-28 grid grid-cols-1 lg:grid-cols-[7fr_5fr] gap-10 lg:gap-16 items-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-6 md:px-12 pt-24 pb-16 md:py-28 grid grid-cols-1 lg:grid-cols-[7fr_5fr] gap-10 lg:gap-16 items-center">
         {/* LEFT */}
         <motion.div
           className="flex flex-col gap-5 md:gap-7"
@@ -126,7 +132,7 @@ export default function Hero() {
           {/* Description */}
           <motion.p
             variants={item}
-            className="text-text-6 leading-[1.8] text-[15px] max-w-lg text-left md:text-justify"
+            className="text-text-6 leading-[1.75] text-[15px] max-w-lg text-left md:text-justify"
           >
             Based out of Bir, Himachal Pradesh — home to Billing,
             the highest paragliding site in Asia. As a full-stack developer,
@@ -136,12 +142,25 @@ export default function Hero() {
             experiences.
           </motion.p>
 
-          {/* CTA */}
-          <motion.div variants={item} className="flex flex-wrap gap-3">
+          {/* Quick facts */}
+          <motion.ul variants={item} className="flex flex-wrap gap-2 -mt-1">
+            {quickFacts.map(({ label, icon: Icon, className }) => (
+              <li
+                key={label}
+                className="flex items-center gap-1.5 rounded-full border border-white/8 bg-white/[0.03] px-3 py-1.5 text-xs text-text-3"
+              >
+                <Icon className={`h-3.5 w-3.5 ${className}`} />
+                {label}
+              </li>
+            ))}
+          </motion.ul>
+
+          {/* CTA — two equal buttons on phones, inline from sm */}
+          <motion.div variants={item} className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Link
                 href="#projects"
-                className="group flex items-center gap-2.5 px-6 py-3 rounded-xl font-semibold text-sm text-bg transition-colors duration-200 cursor-pointer hover:shadow-lg"
+                className="group flex items-center justify-center gap-2.5 px-5 sm:px-6 py-3.5 sm:py-3 rounded-xl font-semibold text-sm text-ink transition-colors duration-200 cursor-pointer hover:shadow-lg"
                 style={{
                   background:
                     "linear-gradient(135deg, var(--color-emerald), var(--color-sky))",
@@ -150,10 +169,18 @@ export default function Hero() {
                 View My Work →
               </Link>
             </motion.div>
+            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+              <Link
+                href="#contact"
+                className="flex items-center justify-center gap-2 px-5 sm:px-6 py-3.5 sm:py-3 rounded-xl border border-white/15 bg-white/[0.04] font-semibold text-sm text-white transition-colors duration-200 hover:bg-white/10"
+              >
+                Hire Me
+              </Link>
+            </motion.div>
           </motion.div>
 
           {/* Social */}
-          <motion.div variants={item} className="flex items-center gap-6">
+          <motion.div variants={item} className="flex items-center gap-4 sm:gap-6">
             {socialLinks.map(({ label, href, hoverClass, icon: Icon }) => (
               <motion.a
                 key={label}
